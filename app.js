@@ -13,9 +13,16 @@ mongoose
   .catch(console.error);
 
 app.use(express.json());
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: "6865930b9432fb69e1a60395",
+  };
+  next();
+});
+
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
-  // if everything works fine, the console will show which port the application is listening to
   console.log(`App listening at port ${PORT}`);
 });

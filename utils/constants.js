@@ -1,15 +1,25 @@
+const { ERROR_CODES, ERROR_MESSAGES } = require("./errors");
+
 const checkResponse = (res, err) => {
   console.error(err);
   if (err.name === "ValidationError") {
-    return res.status(400).send({ message: err.message });
+    return res
+      .status(ERROR_CODES.BAD_REQUEST)
+      .send({ message: ERROR_MESSAGES.INVALID_DATA });
   }
   if (err.name === "CastError") {
-    return res.status(400).send({ message: "Invalid ID format" });
+    return res
+      .status(ERROR_CODES.BAD_REQUEST)
+      .send({ message: ERROR_MESSAGES.INVALID_ID });
   }
   if (err.name === "DocumentNotFoundError") {
-    return res.status(404).send({ message: "User not found" });
+    return res
+      .status(ERROR_CODES.NOT_FOUND)
+      .send({ message: ERROR_MESSAGES.USER_NOT_FOUND });
   }
-  return res.status(500).send({ message: err.message });
+  return res
+    .status(ERROR_CODES.INTERNAL_SERVER_ERROR)
+    .send({ message: ERROR_MESSAGES.SERVER_ERROR });
 };
 
 module.exports = { checkResponse };
