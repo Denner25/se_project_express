@@ -16,15 +16,6 @@ const createItem = (req, res) => {
     .catch((err) => checkResponse(res, err));
 };
 
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
-    .catch((err) => checkResponse(res, err));
-};
-
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   ClothingItem.findByIdAndDelete(itemId)
@@ -58,7 +49,6 @@ const dislikeItem = (req, res) => {
 module.exports = {
   createItem,
   getItems,
-  updateItem,
   deleteItem,
   likeItem,
   dislikeItem,
