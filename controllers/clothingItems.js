@@ -1,6 +1,6 @@
 const ClothingItem = require("../models/clothingItem");
 const { checkResponse } = require("../utils/constants");
-const { ERROR_CODES } = require("../utils/errors");
+const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
@@ -18,9 +18,20 @@ const createItem = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
     .orFail()
-    .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
+    .then((item) => {
+      if (item.owner.toString() !== req.user._id) {
+        return res
+          .status(ERROR_CODES.FORBIDDEN)
+          .send({ message: ERROR_MESSAGES.FORBIDDEN });
+      }
+      return item.deleteOne().then(() => {
+        res
+          .status(ERROR_CODES.OK)
+          .send({ message: "Item deleted", data: item });
+      });
+    })
     .catch((err) => checkResponse(res, err));
 };
 
