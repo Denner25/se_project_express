@@ -24,17 +24,22 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return checkResponse(res, err);
+        return res
+          .status(ERROR_CODES.CONFLICT)
+          .send({ message: ERROR_MESSAGES.EMAIL_EXISTS });
       }
       return checkResponse(res, err);
     });
 };
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.params;
-  User.findById(userId)
+  User.findById(req.user._id)
     .orFail()
-    .then((user) => res.status(ERROR_CODES.OK).send(user))
+    .then((user) => {
+      const userObj = user.toObject();
+      delete userObj.password;
+      res.status(ERROR_CODES.OK).send(userObj);
+    })
     .catch((err) => checkResponse(res, err));
 };
 
@@ -62,7 +67,7 @@ const login = (req, res) => {
     })
     .catch(() => {
       res
-        .status(ERROR_CODES.UNAUTHORIZED)
+        .status(ERROR_CODES.BAD_REQUEST)
         .send({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
     });
 };

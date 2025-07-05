@@ -18,6 +18,7 @@ const ERROR_MESSAGES = {
   INVALID_CREDENTIALS: "Incorrect email or password",
   FORBIDDEN: "Access denied: insufficient permissions",
   UNAUTHORIZED: "Authorization required or token is missing",
+  EMAIL_EXISTS: "A user with this email already exists",
 };
 
 module.exports = { ERROR_CODES, ERROR_MESSAGES };

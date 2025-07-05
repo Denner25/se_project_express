@@ -8,10 +8,10 @@ const { createUser, login } = require("../controllers/users");
 
 router.post("/signin", login);
 router.post("/signup", createUser);
-router.use("/items", clothingItemRouter);
 
 router.use(auth);
 
+router.use("/items", clothingItemRouter);
 router.use("/users", userRouter);
 
 router.use((req, res) => {
