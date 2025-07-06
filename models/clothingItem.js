@@ -6,7 +6,7 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: [true, "The name field is required."],
     minlength: 2,
-    maxlength: 32,
+    maxlength: 30,
   },
   weather: {
     type: String,
