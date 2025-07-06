@@ -1,11 +1,11 @@
 const ClothingItem = require("../models/clothingItem");
-const { checkResponse } = require("../utils/constants");
+const { handleError } = require("../utils/constants");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(ERROR_CODES.OK).send(items))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const createItem = (req, res) => {
@@ -13,7 +13,7 @@ const createItem = (req, res) => {
   const owner = req.user._id;
   ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.status(ERROR_CODES.CREATED).send({ data: item }))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const deleteItem = (req, res) => {
@@ -32,7 +32,7 @@ const deleteItem = (req, res) => {
           .send({ message: "Item deleted", data: item });
       });
     })
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const likeItem = (req, res) => {
@@ -43,7 +43,7 @@ const likeItem = (req, res) => {
   )
     .orFail()
     .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const dislikeItem = (req, res) => {
@@ -54,7 +54,7 @@ const dislikeItem = (req, res) => {
   )
     .orFail()
     .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 module.exports = {

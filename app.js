@@ -1,6 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const mainRouter = require("./routes/index");
 
 const app = express();
@@ -15,6 +17,15 @@ mongoose
 
 app.use(express.json());
 app.use(cors());
+
+app.use(helmet());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
+app.use(limiter);
+
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {

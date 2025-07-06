@@ -1,7 +1,12 @@
 const { ERROR_CODES, ERROR_MESSAGES } = require("./errors");
 
-const checkResponse = (res, err) => {
+const handleError = (res, err) => {
   console.error(err);
+  if (err.code === 11000) {
+    return res
+      .status(ERROR_CODES.CONFLICT)
+      .send({ message: ERROR_MESSAGES.EMAIL_EXISTS });
+  }
   if (err.name === "ValidationError") {
     return res
       .status(ERROR_CODES.BAD_REQUEST)
@@ -22,4 +27,4 @@ const checkResponse = (res, err) => {
     .send({ message: ERROR_MESSAGES.SERVER_ERROR });
 };
 
-module.exports = { checkResponse };
+module.exports = { handleError };

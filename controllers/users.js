@@ -1,14 +1,14 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { checkResponse } = require("../utils/constants");
+const { handleError } = require("../utils/constants");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.status(ERROR_CODES.OK).send(users))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const createUser = (req, res) => {
@@ -19,17 +19,9 @@ const createUser = (req, res) => {
     .then((user) => {
       const userWithoutPassword = user.toObject();
       delete userWithoutPassword.password;
-
       res.status(ERROR_CODES.CREATED).send(userWithoutPassword);
     })
-    .catch((err) => {
-      if (err.code === 11000) {
-        return res
-          .status(ERROR_CODES.CONFLICT)
-          .send({ message: ERROR_MESSAGES.EMAIL_EXISTS });
-      }
-      return checkResponse(res, err);
-    });
+    .catch((err) => handleError(res, err));
 };
 
 const getCurrentUser = (req, res) => {
@@ -40,7 +32,7 @@ const getCurrentUser = (req, res) => {
       delete userObj.password;
       res.status(ERROR_CODES.OK).send(userObj);
     })
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const updateProfile = (req, res) => {
@@ -53,7 +45,7 @@ const updateProfile = (req, res) => {
   )
     .orFail()
     .then((updatedUser) => res.status(ERROR_CODES.OK).send(updatedUser))
-    .catch((err) => checkResponse(res, err));
+    .catch((err) => handleError(res, err));
 };
 
 const login = (req, res) => {
