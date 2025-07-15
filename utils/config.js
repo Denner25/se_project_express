@@ -1,3 +1,3 @@
-const JWT_SECRET = "your-very-secret-key"; // Replace with a strong secret in production
+const { JWT_SECRET = "super-strong-secret" } = process.env;
 
 module.exports = { JWT_SECRET };
