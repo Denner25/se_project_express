@@ -12,7 +12,7 @@ const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
   ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => res.status(ERROR_CODES.CREATED).send({ data: item }))
+    .then((item) => res.status(ERROR_CODES.CREATED).send(item))
     .catch((err) => handleError(res, err));
 };
 
@@ -27,9 +27,7 @@ const deleteItem = (req, res) => {
           .send({ message: ERROR_MESSAGES.FORBIDDEN });
       }
       return item.deleteOne().then(() => {
-        res
-          .status(ERROR_CODES.OK)
-          .send({ message: "Item deleted", data: item });
+        res.status(ERROR_CODES.OK).send({ message: "Item deleted", item });
       });
     })
     .catch((err) => handleError(res, err));
@@ -42,7 +40,7 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
+    .then((item) => res.status(ERROR_CODES.OK).send(item))
     .catch((err) => handleError(res, err));
 };
 
@@ -53,7 +51,7 @@ const dislikeItem = (req, res) => {
     { new: true }
   )
     .orFail()
-    .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
+    .then((item) => res.status(ERROR_CODES.OK).send(item))
     .catch((err) => handleError(res, err));
 };
 
