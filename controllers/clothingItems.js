@@ -4,7 +4,7 @@ const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 
 const getItems = (req, res) => {
   ClothingItem.find({})
-    .then((items) => res.status(ERROR_CODES.OK).send(items))
+    .then((items) => res.status(ERROR_CODES.OK).send({ data: items }))
     .catch((err) => handleError(res, err));
 };
 
