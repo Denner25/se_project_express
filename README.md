@@ -1,6 +1,14 @@
 # WTWR (What to Wear?): Back End
 
-This is the 12th and 13th project of the Software Engineering program at TripleTen. It's a back-end project focused on creating a server for the WTWR application. The learning experience provided a deeper understanding of how to work with databases, set up security and testing. The 13th project focused on server-side authentication and authorization.
+This is the 15th project of the Software Engineering program at TripleTen. This sprint focused on deployment to a remote server, stabilization with PM2, port configuation with nginx, further developing the RESTful Express API that serves the WTWR application by adding middlewares for centralized error handling, early validation of inbound server data and logging with the Winston library.
+
+## Deployed application:
+
+wtwr.nya.pub
+
+## Front-end repository:
+
+https://github.com/Denner25/se_project_react
 
 ## Project features
 

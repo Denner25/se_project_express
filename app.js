@@ -5,6 +5,9 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mainRouter = require("./routes/index");
+const { handleError } = require("./utils/constants");
+const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -27,7 +30,18 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+app.use(requestLogger); // Log all requests
+
 app.use("/", mainRouter);
+
+app.use(errorLogger); // Log all errors
+
+app.use(errors()); // Celebrate error handler
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  handleError(res, err);
+});
 
 app.listen(PORT, () => {
   console.log(`App listening at port ${PORT}`);

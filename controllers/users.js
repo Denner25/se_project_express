@@ -1,17 +1,17 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-const { handleError } = require("../utils/constants");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
+const UnauthorizedError = require("../errors/unauthorized-err");
 
-const getUsers = (req, res) => {
+const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.status(ERROR_CODES.OK).send(users))
-    .catch((err) => handleError(res, err));
+    .catch(next);
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
   bcrypt
     .hash(password, 10)
@@ -21,10 +21,10 @@ const createUser = (req, res) => {
       delete userWithoutPassword.password;
       res.status(ERROR_CODES.CREATED).send(userWithoutPassword);
     })
-    .catch((err) => handleError(res, err));
+    .catch(next);
 };
 
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail()
     .then((user) => {
@@ -32,12 +32,11 @@ const getCurrentUser = (req, res) => {
       delete userObj.password;
       res.status(ERROR_CODES.OK).send(userObj);
     })
-    .catch((err) => handleError(res, err));
+    .catch(next);
 };
 
-const updateProfile = (req, res) => {
+const updateProfile = (req, res, next) => {
   const { name, avatar } = req.body;
-
   User.findByIdAndUpdate(
     req.user._id,
     { name, avatar },
@@ -45,10 +44,10 @@ const updateProfile = (req, res) => {
   )
     .orFail()
     .then((updatedUser) => res.status(ERROR_CODES.OK).send(updatedUser))
-    .catch((err) => handleError(res, err));
+    .catch(next);
 };
 
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -58,9 +57,7 @@ const login = (req, res) => {
       res.send({ token });
     })
     .catch(() => {
-      res
-        .status(ERROR_CODES.BAD_REQUEST)
-        .send({ message: ERROR_MESSAGES.INVALID_CREDENTIALS });
+      next(new UnauthorizedError(ERROR_MESSAGES.INVALID_CREDENTIALS));
     });
 };
 

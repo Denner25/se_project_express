@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../utils/config"); // or wherever your secret lives
+const { JWT_SECRET } = require("../utils/config");
 const { ERROR_CODES } = require("../utils/errors");
 
 const auth = (req, res, next) => {
   const { authorization } = req.headers;
 
-  // Check if authorization header exists and starts correctly
   if (!authorization || !authorization.startsWith("Bearer ")) {
     return res
       .status(ERROR_CODES.UNAUTHORIZED)
@@ -23,7 +22,7 @@ const auth = (req, res, next) => {
       .send({ message: "Invalid token" });
   }
 
-  req.user = payload; // Payload contains _id
+  req.user = payload;
   return next();
 };
 
