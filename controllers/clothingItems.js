@@ -1,6 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
+const NotFoundError = require("../errors/not-found-err");
 const ForbiddenError = require("../errors/forbidden-err");
+const { handleMongooseError } = require("../utils/constants");
 
 const getItems = (req, res, next) => {
   ClothingItem.find({})
@@ -9,28 +11,24 @@ const getItems = (req, res, next) => {
 };
 
 const createItem = (req, res, next) => {
-  const { name, weather, imageUrl } = req.body;
-  const owner = req.user._id;
-  ClothingItem.create({ name, weather, imageUrl, owner })
+  const { name, imageUrl, weather } = req.body;
+  ClothingItem.create({ name, imageUrl, weather, owner: req.user._id })
     .then((item) => res.status(ERROR_CODES.CREATED).send({ data: item }))
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const deleteItem = (req, res, next) => {
-  const { itemId } = req.params;
-  ClothingItem.findById(itemId)
-    .orFail()
+  ClothingItem.findById(req.params.itemId)
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.NOT_FOUND))
     .then((item) => {
       if (item.owner.toString() !== req.user._id) {
         throw new ForbiddenError(ERROR_MESSAGES.FORBIDDEN);
       }
-      return item.deleteOne().then(() => {
-        res
-          .status(ERROR_CODES.OK)
-          .send({ message: "Item deleted", data: item });
-      });
+      return item
+        .deleteOne()
+        .then(() => res.status(ERROR_CODES.OK).send({ data: item }));
     })
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const likeItem = (req, res, next) => {
@@ -39,9 +37,9 @@ const likeItem = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.NOT_FOUND))
     .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const dislikeItem = (req, res, next) => {
@@ -50,14 +48,14 @@ const dislikeItem = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true }
   )
-    .orFail()
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.NOT_FOUND))
     .then((item) => res.status(ERROR_CODES.OK).send({ data: item }))
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 module.exports = {
-  createItem,
   getItems,
+  createItem,
   deleteItem,
   likeItem,
   dislikeItem,

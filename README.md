@@ -4,7 +4,8 @@ This is the 15th project of the Software Engineering program at TripleTen. This 
 
 ## Deployed application:
 
-wtwr.nya.pub
+Frontend: https://wtwr.nya.pub
+Backend: https://api.wtwr.nya.pub
 
 ## Front-end repository:
 

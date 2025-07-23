@@ -4,6 +4,8 @@ const User = require("../models/user");
 const { ERROR_CODES, ERROR_MESSAGES } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 const UnauthorizedError = require("../errors/unauthorized-err");
+const NotFoundError = require("../errors/not-found-err");
+const { handleMongooseError } = require("../utils/constants");
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -21,18 +23,18 @@ const createUser = (req, res, next) => {
       delete userWithoutPassword.password;
       res.status(ERROR_CODES.CREATED).send(userWithoutPassword);
     })
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail()
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.NOT_FOUND))
     .then((user) => {
       const userObj = user.toObject();
       delete userObj.password;
       res.status(ERROR_CODES.OK).send(userObj);
     })
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const updateProfile = (req, res, next) => {
@@ -42,9 +44,9 @@ const updateProfile = (req, res, next) => {
     { name, avatar },
     { new: true, runValidators: true }
   )
-    .orFail()
+    .orFail(() => new NotFoundError(ERROR_MESSAGES.NOT_FOUND))
     .then((updatedUser) => res.status(ERROR_CODES.OK).send(updatedUser))
-    .catch(next);
+    .catch((err) => handleMongooseError(err, next));
 };
 
 const login = (req, res, next) => {

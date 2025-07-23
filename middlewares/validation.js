@@ -59,7 +59,6 @@ const validateLogin = celebrate({
 // 4. ID validation for params (userId, itemId, etc.)
 const validateId = celebrate({
   params: Joi.object().keys({
-    userId: Joi.string().hex().length(24),
     itemId: Joi.string().hex().length(24),
   }),
 });
