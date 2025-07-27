@@ -57,7 +57,8 @@ const updateProfile = (req, res, next) => {
 const login = (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
+    next(new BadRequestError(ERROR_MESSAGES.INVALID_DATA));
+    return;
   }
   User.findUserByCredentials(email, password)
     .then((user) => {
